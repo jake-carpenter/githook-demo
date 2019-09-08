@@ -1,0 +1,3 @@
+#!/usr/sh
+
+dotnet script $DOTNET_SCRIPT_DIR\\pre-push.csx
