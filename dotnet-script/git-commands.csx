@@ -2,14 +2,18 @@
 
 public class GitCommands
 {
-    public static void StashChanges()
+    public static bool StashChanges()
     {
-        CommandLine.GetExecuteResult("git stash -q --keep-index");
+        var result = CommandLine.GetExecuteResult("git stash --keep-index -q");
+
+        return result.ExitCode != 0;
     }
 
-    public static void UnstashChanges()
+    public static bool UnstashChanges()
     {
-        CommandLine.GetExecuteResult("git stash pop -q");
+        var result = CommandLine.GetExecuteResult("git stash pop -q");
+
+        return result.ExitCode != 0;
     }
 
     public static bool CheckForUnstagedChanges()

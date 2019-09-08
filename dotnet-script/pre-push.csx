@@ -1,45 +1,49 @@
 #!/usr/bin/env dotnet dotnet-script
 #load "git-commands.csx"
 #load "dotnet-commands.csx"
+#load "logger.csx"
 
+public void DisplayActionResult(string msg, Action action)
+{
+    Logger.LogStartProcess(msg);
+    action.Invoke();
+    Logger.LogFinishProcess(msg);
+}
+
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 var exitCode = 0;
-bool stashedChanges = GitCommands.CheckForUnstagedChanges();
+bool unstagedChanges = GitCommands.CheckForUnstagedChanges();
+var msg = "";
 
 try
 {
-    if (stashedChanges)
+    if (unstagedChanges)
     {
-        CommandLine.Write("--> Found unstaged changes. Stashing...", ConsoleColor.Yellow);
-        GitCommands.StashChanges();
+        msg = "Found unstaged changes. Stashing...";
+        DisplayActionResult(msg, () => GitCommands.StashChanges());
     }
 
-    CommandLine.Write("--> Building solution...", ConsoleColor.Yellow);
-    DotnetCommands.BuildCode();
+    msg = "Building solution...";
+    DisplayActionResult(msg, () => DotnetCommands.BuildCode());
 
-    CommandLine.Write("--> Running tests...", ConsoleColor.Yellow);
-    DotnetCommands.TestCode();
-
-    CommandLine.Write("--> Success!", ConsoleColor.Green);
+    msg = "Running tests...";
+    DisplayActionResult(msg, () => DotnetCommands.TestCode());
 }
 catch (System.Exception ex)
 {
-    GitCommands.UnstashChanges();
-
+    Logger.LogFailProcess(msg, ex.Message);
     exitCode = ex is ExecutionException execEx ? execEx.ExitCode : -1;
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine(ex.Message);
 }
 finally
 {
-    CommandLine.Write("--> Unstashing changes...", ConsoleColor.Yellow);
-
-    if (stashedChanges)
+    if (unstagedChanges)
     {
-        GitCommands.UnstashChanges();
+        DisplayActionResult("Unstashing changes...", () => GitCommands.UnstashChanges());
     }
 
     Environment.Exit(exitCode);
 }
+
 
 
 

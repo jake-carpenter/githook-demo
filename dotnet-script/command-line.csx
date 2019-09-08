@@ -10,13 +10,6 @@ public class ExecutionException : Exception
 
 public static class CommandLine
 {
-    public static void Write(string message, ConsoleColor color = ConsoleColor.White)
-    {
-        Console.ForegroundColor = color;
-        Console.WriteLine(message);
-        Console.ResetColor();
-    }
-
     public static void CheckResult(string command)
     {
         var result = GetExecuteResult(command);
@@ -41,7 +34,6 @@ public static class CommandLine
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-
             }
         };
 
@@ -54,19 +46,6 @@ public static class CommandLine
             StandardError = proc.StandardError.ReadToEnd(),
             StandardOutput = proc.StandardOutput.ReadToEnd()
         };
-    }
-}
-
-public static class Logger
-{
-    public static void LogInfo(string message)
-    {
-        CommandLine.Write(message);
-    }
-
-    public static void LogError(string message)
-    {
-        CommandLine.Write(message, ConsoleColor.Red);
     }
 }
 
