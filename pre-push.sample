@@ -19,8 +19,8 @@ def try_run(cmd):
         sys.exit(code)
 
 
-local_branch = subprocess.Popen(
-    "git rev-parse --abbrev-ref HEAD", stdout=subprocess.PIPE)
+local_branch = subprocess.check_output(
+    "git rev-parse --abbrev-ref HEAD").strip()
 
 if (local_branch == "master"):
     print_block("Building project...")
