@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import subprocess
+
+
+def print_block(text):
+    print
+    print("\033[93m {}\033[00m".format(text))
+    print
+
+
+def try_run(cmd):
+    code = os.system(cmd)
+
+    if (code > 0):
+        print("\033[91m {}\033[00m".format('Failed!'))
+        sys.exit(code)
+
+
+local_branch = subprocess.Popen(
+    "git rev-parse --abbrev-ref HEAD", stdout=subprocess.PIPE)
+
+if (local_branch == "master"):
+    print_block("Building project...")
+    try_run("dotnet build -c Release")
+
+    print_block("Running Tests...")
+    try_run("dotnet test -c Release")
+
+sys.exit(0)
