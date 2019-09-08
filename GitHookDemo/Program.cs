@@ -7,7 +7,6 @@ namespace GitHookDemo
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            throw new ;
         }
     }
 }
