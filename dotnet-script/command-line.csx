@@ -43,8 +43,8 @@ public static class CommandLine
         return new ExecuteResult
         {
             ExitCode = proc.ExitCode,
-            StandardError = proc.StandardError.ReadToEnd(),
-            StandardOutput = proc.StandardOutput.ReadToEnd()
+            StandardError = proc.StandardError.ReadToEnd().Trim(),
+            StandardOutput = proc.StandardOutput.ReadToEnd().Trim()
         };
     }
 }

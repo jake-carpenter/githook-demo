@@ -13,6 +13,9 @@ public static class Logger
 
     public static void LogStartProcess(string message)
     {
+        if (Console.OutputEncoding != System.Text.Encoding.UTF8)
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
         Write(ProcessMessagePadding + message, ConsoleColor.Yellow);
     }
 

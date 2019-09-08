@@ -22,4 +22,11 @@ public class GitCommands
 
         return result.ExitCode != 0;
     }
+
+    public static bool IsProtectedBranch(params string[] branches)
+    {
+        var result = CommandLine.GetExecuteResult("git rev-parse --abbrev-ref HEAD");
+
+        return branches.Contains(result.StandardOutput);
+    }
 }

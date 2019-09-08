@@ -3,25 +3,15 @@
 #load "dotnet-commands.csx"
 #load "logger.csx"
 
-public void DisplayActionResult(string msg, Action action)
-{
-    Logger.LogStartProcess(msg);
-    action.Invoke();
-    Logger.LogFinishProcess(msg);
-}
-
-Console.OutputEncoding = System.Text.Encoding.UTF8;
+var protectedBranches = new[] { "master" };
 var exitCode = 0;
-bool unstagedChanges = GitCommands.CheckForUnstagedChanges();
+bool unstagedChanges = false;
 var msg = "";
 
 try
 {
-    if (unstagedChanges)
-    {
-        msg = "Found unstaged changes. Stashing...";
-        DisplayActionResult(msg, () => GitCommands.StashChanges());
-    }
+    ShouldRun();
+    unstagedChanges = StashUnstagedChanges();
 
     msg = "Building solution...";
     DisplayActionResult(msg, () => DotnetCommands.BuildCode());
@@ -36,14 +26,42 @@ catch (System.Exception ex)
 }
 finally
 {
-    if (unstagedChanges)
-    {
-        DisplayActionResult("Unstashing changes...", () => GitCommands.UnstashChanges());
-    }
-
+    CheckForChangesToUnstash(unstagedChanges);
     Environment.Exit(exitCode);
 }
 
+private void ShouldRun()
+{
+    if (!GitCommands.IsProtectedBranch(protectedBranches))
+    {
+        Environment.Exit(exitCode);
+    }
+}
 
+private bool StashUnstagedChanges()
+{
+    if (GitCommands.CheckForUnstagedChanges())
+    {
+        msg = "Found unstaged changes. Stashing...";
+        DisplayActionResult(msg, () => GitCommands.StashChanges());
 
+        return true;
+    }
 
+    return false;
+}
+
+private void CheckForChangesToUnstash(bool stashed)
+{
+    if (stashed)
+    {
+        DisplayActionResult("Unstashing changes...", () => GitCommands.UnstashChanges());
+    }
+}
+
+public void DisplayActionResult(string msg, Action action)
+{
+    Logger.LogStartProcess(msg);
+    action.Invoke();
+    Logger.LogFinishProcess(msg);
+}
