@@ -21,22 +21,20 @@ public static class Logger
 
     public static void LogFinishProcess(string message)
     {
-        var width = ProcessMessagePadding.Length / 2;
-        var iconText = $"{SuccessIcon}{ProcessMessagePadding.Substring(0, width)}";
+        var padWidth = ProcessMessagePadding.Length - SuccessIcon.Length;
 
         ResetLine();
-        Write(iconText, ConsoleColor.Green);
+        Write(SuccessIcon.PadRight(padWidth), ConsoleColor.Green);
         Write(message, ConsoleColor.Yellow);
         Write("\n");
     }
 
     public static void LogFailProcess(string processMessage, string errorMessage)
     {
-        var width = ProcessMessagePadding.Length / 2;
-        var iconText = $"{FailureIcon}{ProcessMessagePadding.Substring(0, width)}";
+        var padWidth = ProcessMessagePadding.Length - FailureIcon.Length;
 
         ResetLine();
-        Write(iconText, ConsoleColor.Red);
+        Write(FailureIcon.PadRight(padWidth), ConsoleColor.Red);
         Write(processMessage, ConsoleColor.Yellow);
         Write("\n");
         LogError(errorMessage);
